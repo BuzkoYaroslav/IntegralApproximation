@@ -33,8 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,14 +49,46 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="Integral Methods\IntegralMethod.cs" />
+    <Compile Include="Integral Methods\RectangularMethod.cs" />
+    <Compile Include="Integral Methods\SimpsonMethod.cs" />
+    <Compile Include="Integral Methods\TrapezoidMethod.cs" />
+    <Compile Include="IntegralMethodsGraphicalRepresentation.cs" />
+    <Compile Include="Support classes\Approximator.cs" />
+    <Compile Include="Equasion Methods\ChordMethod.cs" />
+    <Compile Include="Support classes\Equasion.cs" />
+    <Compile Include="Equasion Methods\EquasionMethod.cs" />
+    <Compile Include="Function Methods\FunctionMethod.cs" />
+    <Compile Include="System Methods\GaussMethod.cs" />
+    <Compile Include="Equasion Methods\GenericIteration.cs" />
+    <Compile Include="Equasion Methods\HalfDivision.cs" />
+    <Compile Include="System Methods\HoleckiiMethod.cs" />
+    <Compile Include="IntegralApproximator.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="IntegralApproximator.Designer.cs">
+      <DependentUpon>IntegralApproximator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Support classes\GraphicPainter.cs" />
+    <Compile Include="Function Methods\LagranzFunction.cs" />
+    <Compile Include="Support classes\MathFunction.cs" />
+    <Compile Include="Support classes\Matrix.cs" />
+    <Compile Include="Method.cs" />
+    <Compile Include="Function Methods\MinSquareFunction.cs" />
+    <Compile Include="Function Methods\NewtonFunction.cs" />
+    <Compile Include="Equasion Methods\NewtonMethod.cs" />
+    <Compile Include="Support classes\Polynomial.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Equasion Methods\SimpleIteration.cs" />
+    <Compile Include="System Methods\SimpleIterationSystem.cs" />
+    <Compile Include="Support classes\SLAE.cs" />
+    <Compile Include="System Methods\SystemMethod.cs" />
+    <Compile Include="Support classes\Vector.cs" />
+    <Compile Include="System Methods\ZeidelMethod.cs" />
+    <EmbeddedResource Include="IntegralApproximator.resx">
+      <DependentUpon>IntegralApproximator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
