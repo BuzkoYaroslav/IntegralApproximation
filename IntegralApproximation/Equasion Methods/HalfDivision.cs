@@ -13,7 +13,7 @@ namespace library.Equasion_methods
             MathFunction func = eq.Left - eq.Right;
 
             if (func.Calculate(a) * func.Calculate(b) > 0)
-                return double.PositiveInfinity;
+                throw new Exception("Method cannot be applied!");
 
             if (Math.Abs(func.Calculate(a)) <= epsilanIter) return a;
             if (Math.Abs(func.Calculate(b)) <= epsilanIter) return b;

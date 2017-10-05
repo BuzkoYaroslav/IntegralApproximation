@@ -15,16 +15,13 @@ namespace IntegralApproximation
     {
         Random rnd = new Random();
 
-        GraphicPainter[] painters = new GraphicPainter[7];
-        double[] solutions = new double[6];
+        double?[] solutions = new double?[6];
+        int currentIndex = -1;
 
-        MathFunction func = new PowerFunction(1.0d, new XFunction(1.0d), 3);
-
-        private readonly double a = 0;
-        private readonly double b = 2.3;
+        MathFunction func = new PowerFunction(1.0d, new XFunction(1.0d), 1);
 
         private readonly double width = 3;
-        private readonly int n = 10;
+        private readonly double alpha = 0.5;
 
         public IntegralApproximator()
         {
@@ -33,12 +30,38 @@ namespace IntegralApproximation
 
         private void IntegralApproximator_Load(object sender, EventArgs e)
         {
-
+            richTextBox1.Text = "F(x) = " + func.ToString();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(func.ToString());
+            GraphicRepresentation frm = new GraphicRepresentation();
+
+            GraphicPainter painter = new GraphicPainter();
+            painter.DrawElement = frm.pictureBoxToDraw;
+
+            ConfigurePainter(ref painter, currentIndex);
+
+            frm.CurrentPainter = painter;
+
+            frm.Show();
+        }
+
+        private void CalculateSolution(IntegralMethod method, out double? solution)
+        {
+            try
+            {
+                double a = Convert.ToDouble(textBox1.Text),
+                       b = Convert.ToDouble(textBox2.Text);
+                int n = Convert.ToInt32(numericUpDown1.Value);
+
+                solution = func.CalculateDeterminedIntegral(method, a, b, n);
+            }
+            catch (InvalidCastException exp)
+            {
+                solution = null;
+                MessageBox.Show(exp.Message);
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -46,19 +69,9 @@ namespace IntegralApproximation
             if (!radioButton1.Checked)
                 return;
 
-            if (painters[0] != null)
-            {
-                painters[0].UpdateUI();
-                richTextBox1.Text = solutions[0].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[0]);
-            painters[0].Draw(func, GetRandColor(), (float)width);
-            painters[0].DrawPath(painters[0].PathForRectangularMethod(func, RectangularMethodType.Left, a, b, n), GetRandColor(), (float)width, GetRandColor(), 0.5);
-
-            solutions[0] = func.CalculateDeterminedIntegral(new RectangularMethod(RectangularMethodType.Left), a, b, n);
-            richTextBox1.Text = solutions[0].ToString();
+            currentIndex = 0;
+            CalculateSolution(new RectangularMethod(RectangularMethodType.Left), out solutions[0]);
+            ShowSolution(solutions[0]);
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -66,19 +79,9 @@ namespace IntegralApproximation
             if (!radioButton2.Checked)
                 return;
 
-            if (painters[1] != null)
-            {
-                painters[1].UpdateUI();
-                richTextBox1.Text = solutions[1].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[1]);
-            painters[1].Draw(func, GetRandColor(), (float)width);
-            painters[1].DrawPath(painters[1].PathForRectangularMethod(func, RectangularMethodType.Right, a, b, n), GetRandColor(), (float)width, GetRandColor(), 0.5);
-
-            solutions[1] = func.CalculateDeterminedIntegral(new RectangularMethod(RectangularMethodType.Right), a, b, n);
-            richTextBox1.Text = solutions[1].ToString();
+            currentIndex = 1;
+            CalculateSolution(new RectangularMethod(RectangularMethodType.Right), out solutions[1]);
+            ShowSolution(solutions[1]);
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
@@ -86,19 +89,9 @@ namespace IntegralApproximation
             if (!radioButton3.Checked)
                 return;
 
-            if (painters[2] != null)
-            {
-                painters[2].UpdateUI();
-                richTextBox1.Text = solutions[2].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[2]);
-            painters[2].Draw(func, GetRandColor(), (float)width);
-            painters[2].DrawPath(painters[2].PathForRectangularMethod(func, RectangularMethodType.Central, a, b, n), GetRandColor(), (float)width, GetRandColor(), 0.5);
-
-            solutions[2] = func.CalculateDeterminedIntegral(new RectangularMethod(RectangularMethodType.Central), a, b, n);
-            richTextBox1.Text = solutions[2].ToString();
+            currentIndex = 2;
+            CalculateSolution(new RectangularMethod(RectangularMethodType.Central), out solutions[2]);
+            ShowSolution(solutions[2]);
         }
 
         private void radioButton4_CheckedChanged(object sender, EventArgs e)
@@ -106,19 +99,9 @@ namespace IntegralApproximation
             if (!radioButton4.Checked)
                 return;
 
-            if (painters[3] != null)
-            {
-                painters[3].UpdateUI();
-                richTextBox1.Text = solutions[3].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[3]);
-            painters[3].Draw(func, GetRandColor(), (float)width);
-            painters[3].DrawPath(painters[3].PathForTrapezoidMethod(func, a, b, n), GetRandColor(), (float)width, GetRandColor(), 0.5);
-
-            solutions[3] = func.CalculateDeterminedIntegral(new TrapezoidMethod(), a, b, n);
-            richTextBox1.Text = solutions[3].ToString();
+            currentIndex = 3;
+            CalculateSolution(new TrapezoidMethod(), out solutions[3]);
+            ShowSolution(solutions[3]);
         }
 
         private void radioButton5_CheckedChanged(object sender, EventArgs e)
@@ -126,19 +109,9 @@ namespace IntegralApproximation
             if (!radioButton5.Checked)
                 return;
 
-            if (painters[4] != null)
-            {
-                painters[4].UpdateUI();
-                richTextBox1.Text = solutions[4].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[4]);
-            painters[4].Draw(func, GetRandColor(), (float)width);
-            painters[4].DrawPath(painters[4].PathForSimpsonMethod(func, a, b, n), GetRandColor(), (float)width, GetRandColor(), 0.5);
-
-            solutions[4] = func.CalculateDeterminedIntegral(new SimpsonMethod(), a, b, n);
-            richTextBox1.Text = solutions[4].ToString();
+            currentIndex = 4;
+            CalculateSolution(new SimpsonMethod(), out solutions[4]);
+            ShowSolution(solutions[4]);
         }
 
         private void radioButton6_CheckedChanged(object sender, EventArgs e)
@@ -146,20 +119,31 @@ namespace IntegralApproximation
             if (!radioButton6.Checked)
                 return;
 
-            if (painters[5] != null)
-            {
-                painters[5].UpdateUI();
-                richTextBox1.Text = solutions[5].ToString();
-                return;
-            }
-
-            ConfigurePainter(out painters[5]);
+            currentIndex = 5;
+            CalculateSolution(new GaussIntegralMethod(), out solutions[5]);
+            ShowSolution(solutions[5]);
         }
 
-        private void ConfigurePainter(out GraphicPainter painter)
+        private void ConfigurePainter(ref GraphicPainter painter, int currentIndex)
         {
-            painter = new GraphicPainter(pictureBox1);
+            try
+            {
+                double a = Convert.ToDouble(textBox1.Text),
+                       b = Convert.ToDouble(textBox2.Text);
+                int n = Convert.ToInt32(numericUpDown1.Value);
 
+                ConfigureBounds(ref painter, a, b);
+                painter.Draw(func, GetRandColor(), (float)width);
+                DrawCurrentRegion(ref painter, currentIndex, a, b, n);
+            } 
+            catch (InvalidCastException exp)
+            {
+                MessageBox.Show(exp.Message);
+            }
+        }
+
+        private void ConfigureBounds(ref GraphicPainter painter, double a, double b)
+        {
             double maxF = func.MaxValue(a, b, false),
                    minF = func.MinValue(a, b, false);
 
@@ -187,26 +171,69 @@ namespace IntegralApproximation
             painter.XBounds = new Point((int)x - 1, (int)x1 + 1);
             painter.YBounds = new Point((int)y - 1, (int)y1 + 1);
         }
+        private void DrawCurrentRegion(ref GraphicPainter painter, int currentIndex, double a, double b, int n)
+        {
+            switch (currentIndex)
+            {
+                case 0:
+                    painter.DrawPath(painter.PathForRectangularMethod(func, RectangularMethodType.Left, a, b, n), 
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                case 1:
+                    painter.DrawPath(painter.PathForRectangularMethod(func, RectangularMethodType.Right, a, b, n),
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                case 2:
+                    painter.DrawPath(painter.PathForRectangularMethod(func, RectangularMethodType.Central, a, b, n),
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                case 3:
+                    painter.DrawPath(painter.PathForTrapezoidMethod(func, a, b, n),
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                case 4:
+                    painter.DrawPath(painter.PathForSimpsonMethod(func, a, b, n),
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                case 6:
+                    painter.DrawPath(painter.PathForFunction(func, a, b),
+                        GetRandColor(), (float)width, GetRandColor(), alpha);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private Color GetRandColor()
         {
             return Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
         }
 
-        private void radioButton7_CheckedChanged(object sender, EventArgs e)
+        private void ShowSolution(double? solution)
         {
-            if (!radioButton7.Checked)
-                return;
+            richTextBox2.Text = "";
 
-            if (painters[6] != null)
-            {
-                painters[6].UpdateUI();
-                //richTextBox1.Text = solutions[6].ToString();
-                return;
-            }
+            Bitmap myBitmap = new Bitmap(Image.FromFile("LIT-small.jpg"));
+            Clipboard.SetDataObject(myBitmap);
+            DataFormats.Format format = DataFormats.GetFormat(DataFormats.Bitmap);
+            if (richTextBox2.CanPaste(format))
+                richTextBox2.Paste(format);
 
-            ConfigurePainter(out painters[6]);
-            painters[6].Draw(func, GetRandColor(), (float)width);
-            painters[6].DrawPath(painters[6].PathForFunction(func, a, b), GetRandColor(), (float)width, GetRandColor(), 0.5);
+            richTextBox2.Text += " = " + solution != null ? solution.ToString() : "undefined solution";
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            GraphicRepresentation frm = new GraphicRepresentation();
+
+            GraphicPainter painter = new GraphicPainter();
+            painter.DrawElement = frm.pictureBoxToDraw;
+
+            ConfigurePainter(ref painter, 6);
+
+            frm.CurrentPainter = painter;
+
+            frm.Show();
         }
     }
 }

@@ -30,7 +30,7 @@ namespace library
             double result = 0;
             double difference = (b - a) / n;
 
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < n; i++)
             {
                 result += func.Calculate(SuitableXForIndex(a + difference * i, a + difference * (i + 1)));
             }

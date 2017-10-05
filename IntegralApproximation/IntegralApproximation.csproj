@@ -49,6 +49,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GraphicRepresentation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GraphicRepresentation.Designer.cs">
+      <DependentUpon>GraphicRepresentation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Integral Methods\GaussIntegralMethod.cs" />
     <Compile Include="Integral Methods\IntegralMethod.cs" />
     <Compile Include="Integral Methods\RectangularMethod.cs" />
     <Compile Include="Integral Methods\SimpsonMethod.cs" />
@@ -86,6 +93,9 @@
     <Compile Include="System Methods\SystemMethod.cs" />
     <Compile Include="Support classes\Vector.cs" />
     <Compile Include="System Methods\ZeidelMethod.cs" />
+    <EmbeddedResource Include="GraphicRepresentation.resx">
+      <DependentUpon>GraphicRepresentation.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="IntegralApproximator.resx">
       <DependentUpon>IntegralApproximator.cs</DependentUpon>
     </EmbeddedResource>
@@ -110,6 +120,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LIT-small.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

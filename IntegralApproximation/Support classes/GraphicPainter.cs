@@ -42,6 +42,10 @@ namespace IntegralApproximation
             DrawElement = element;
             DrawAxes();
         }
+        public GraphicPainter()
+        {
+            content = new List<DrawingSettings>();
+        }
 
         private double XDifference
         {
@@ -60,11 +64,17 @@ namespace IntegralApproximation
 
         private void ReloadGraphicContext()
         {
+            if (elementToDraw == null)
+                return;
+
             bmp = new Bitmap(elementToDraw.Width, elementToDraw.Height);
             context = Graphics.FromImage(bmp);
         }
         private void RedrawContent()
         {
+            if (context == null)
+                return;
+
             context.Clear(Color.White);
             DrawAxes();
 
@@ -77,6 +87,9 @@ namespace IntegralApproximation
         }
         private void DrawAxes()
         {
+            if (context == null)
+                return;
+
             float centerX = (float)FunctionXToScreenX(0);
             float centerY = (float)FunctionYToScreenY(0);
 
@@ -95,6 +108,9 @@ namespace IntegralApproximation
         }
         private void Draw(DrawingSettings drSet)
         {
+            if (context == null)
+                return;
+
             if (drSet.drawingObject is MathFunction)
             {
                 MathFunction func = drSet.drawingObject as MathFunction;
@@ -219,7 +235,8 @@ namespace IntegralApproximation
 
             Draw(drSet);
 
-            elementToDraw.Image = bmp;
+            if (elementToDraw != null)
+                elementToDraw.Image = bmp;
         }
         public void DrawPath(GraphicsPath path, Color borderColor, float borderWidth, Color brushColor, double brushAlpha)
         {
@@ -233,11 +250,15 @@ namespace IntegralApproximation
 
             Draw(drSet);
 
-            elementToDraw.Image = bmp;
+            if (elementToDraw != null)
+                elementToDraw.Image = bmp;
         }
 
         public void UpdateUI()
         {
+            if (elementToDraw == null)
+                return;
+
             elementToDraw.Image = bmp;
         }
 
