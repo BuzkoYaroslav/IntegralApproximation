@@ -18,7 +18,7 @@ namespace IntegralApproximation
         double?[] solutions = new double?[6];
         int currentIndex = -1;
 
-        MathFunction func = new PowerFunction(1.0d, new XFunction(1.0d), 1);
+        MathFunction func = 1.0 / new LnFunction(1.0, new XFunction(1.0));
 
         private readonly double width = 3;
         private readonly double alpha = 0.5;

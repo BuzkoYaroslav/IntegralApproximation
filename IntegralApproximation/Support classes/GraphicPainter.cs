@@ -114,14 +114,14 @@ namespace IntegralApproximation
             if (drSet.drawingObject is MathFunction)
             {
                 MathFunction func = drSet.drawingObject as MathFunction;
-                PointF[] points = PointsForFunction(func, minX, maxX);
+                Tuple<double, double>[] continuousRegions = func.ContinuousRegions(minX, maxX, minY, maxY);
 
-                context.DrawLines(new Pen(drSet.borderColor, drSet.borderWidth), points);
-            }
-            else if (drSet.drawingObject is PointF[]) {
-                PointF[] pnts = drSet.drawingObject as PointF[];
-                context.FillPolygon(drSet.brush, pnts);
-                context.DrawPolygon(new Pen(drSet.borderColor, drSet.borderWidth), pnts);
+                foreach (Tuple<double, double> region in continuousRegions)
+                {
+                    PointF[] points = PointsForFunction(func, region.Item1, region.Item2);
+
+                    context.DrawLines(new Pen(drSet.borderColor, drSet.borderWidth), points);
+                }
             }
             else if (drSet.drawingObject is GraphicsPath)
             {

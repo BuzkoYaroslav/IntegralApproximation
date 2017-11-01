@@ -255,7 +255,7 @@ namespace library
 
     public class MathFunction
     {
-        private static double epsilan = Math.Pow(10, -4);
+        private const double epsilan = 0.0001;
 
         private delegate bool Condition(double f, double best);
         private delegate bool SingleCondition(double f);
@@ -264,6 +264,7 @@ namespace library
         protected MathFunctionType type;
         protected List<MathFunction> functions;
 
+        #region Constructor
         public MathFunction()
         {
             functions = new List<MathFunction>();
@@ -313,7 +314,9 @@ namespace library
                     break;
             }
         }
+        #endregion
 
+        #region Bool features
         public virtual bool IsZero()
         {
             foreach (MathFunction func in functions)
@@ -323,6 +326,89 @@ namespace library
             return false;
         }
 
+        private bool IsGood(SingleCondition cond, double a, double b, double step = epsilan)
+        {
+            try
+            {
+                for (double i = a; i <= b; i += epsilan)
+                {
+                    if (!cond(Calculate(i)))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (NotFiniteNumberException)
+            {
+                return false;
+            }
+            catch (DivideByZeroException)
+            {
+                return false;
+            }
+        }
+
+        public bool IsGreaterThanZero(double a, double b)
+        {
+            return IsGood((double func) => { return func > 0; }, a, b);
+        }
+        public bool IsSmallerThanZero(double a, double b)
+        {
+            return IsGood((double f) => { return f < 0; }, a, b);
+        }
+        public bool IsContinuous(double a, double b)
+        {
+            return IsGood((double func) => { return !double.IsInfinity(func) && !double.IsNaN(func); },
+                          a, b);
+        }
+        public bool IsContinuous(double a, double b, double downYBound, double upYBound, double eps = epsilan)
+        {
+            return IsGood((double func) => { return func > downYBound && func < upYBound; },
+                          a, b, eps);
+        }
+        public bool IsWithConstSign(double a, double b)
+        {
+            return IsSmallerThanZero(a, b) || IsGreaterThanZero(a, b);
+        }
+
+        public Tuple<double, double>[] ContinuousRegions(double a, double b, double downYBound = double.NegativeInfinity, double upYBound = double.PositiveInfinity)
+        {
+            List<Tuple<double, double>> regions = new List<Tuple<double, double>>();
+            double epsilan = Math.Pow(10.0, -2);
+
+            double left = a, right = a + epsilan;
+
+            while (true)
+            {
+                if (right > b)
+                {
+                    if (IsContinuous(left, right - epsilan, downYBound, upYBound, epsilan))
+                        regions.Add(Tuple.Create(left, right - epsilan));
+
+                    break;
+                }
+                if (IsContinuous(left, right, downYBound, upYBound, epsilan))
+                {
+                    right += epsilan;
+                    continue;
+                }
+
+                if (left < right - epsilan &&
+                    IsContinuous(left, right - epsilan, downYBound, upYBound, epsilan))
+                    regions.Add(Tuple.Create(left, right - epsilan));
+
+                left = right;
+                right += epsilan;
+            }
+
+            return regions.ToArray();
+        }
+
+        #endregion
+
+        #region Public methods
         private void InitializeDivision(MathFunction[] functions)
         {
             MathFunction up = new MathFunction(1.0d, MathFunctionType.Multiplication);
@@ -415,7 +501,25 @@ namespace library
 
             return result;
         }
+        public double CalculateDeterminedIntegral(IntegralMethod method, double a, double b, int n)
+        {
+            return method.Solve(this, a, b, n);
+        }
+        public override string ToString()
+        {
+            string result = coef != 1 ? Math.Round(coef, 2) + " * " : "" + "(";
+            string splitter = type == MathFunctionType.Sum ? " + " : type == MathFunctionType.Multiplication ? " * " : " : ";
 
+            for (int i = 0; i < functions.Count; i++)
+                result += functions[i].ToString() + (i != (functions.Count - 1) ? splitter : "");
+
+            result += ")";
+
+            return result;
+        }
+        #endregion
+
+        #region Overrided operators
         protected virtual MathFunction MinusFunction()
         {
             return new MathFunction(-coef, type, functions.ToArray());
@@ -525,19 +629,9 @@ namespace library
 
             return new Polynomial(coef);
         }
+        #endregion
 
-        public override string ToString()
-        {
-            string result = coef != 1 ? Math.Round(coef, 2) + " * " : "" + "(";
-            string splitter = type == MathFunctionType.Sum ? " + " : type == MathFunctionType.Multiplication ? " * " : " : ";
-
-            for (int i = 0; i < functions.Count; i++)
-                result += functions[i].ToString() + (i != (functions.Count - 1) ? splitter : "");
-
-            result += ")";
-
-            return result;
-        }
+        #region Global extremum
 
         public double MaxValue(double a, double b, bool isAbsolute = true)
         {
@@ -563,52 +657,6 @@ namespace library
             return result;
         }
 
-        private bool IsGood(SingleCondition cond, double a, double b)
-        {
-            try
-            {
-                for (double i = a; i <= b; i += epsilan)
-                {
-                    if (!cond(Calculate(i)))
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-            catch (NotFiniteNumberException)
-            {
-                return false;
-            }
-            catch (DivideByZeroException)
-            {
-                return false;
-            }
-        }
-
-        public bool IsGreaterThanZero(double a, double b)
-        {
-            return IsGood((double func) => { return func > 0; }, a, b);
-        }
-        public bool IsSmallerThanZero(double a, double b)
-        {
-            return IsGood((double f) => { return f < 0; }, a, b);
-        }
-        public bool IsContinuous(double a, double b)
-        {
-            return IsGood((double func) => { return !double.IsInfinity(func) && !double.IsNaN(func); },
-                          a, b);
-        }
-        public bool IsWithConstSign(double a, double b)
-        {
-            return IsSmallerThanZero(a, b) || IsGreaterThanZero(a, b);
-        }
-
-
-        public double CalculateDeterminedIntegral(IntegralMethod method, double a, double b, int n)
-        {
-            return method.Solve(this, a, b, n);
-        }
+        #endregion
     }
 }
